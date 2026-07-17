@@ -12,14 +12,20 @@ import 'config/app_config.dart';
 /// when the real backend isn't available even though USE_MOCK was false.
 final mockModeProvider = Provider<bool>((_) => AppConfig.useMock);
 
+/// Whether to use the real RevenueCat SDK. This is intentionally decoupled from
+/// [mockModeProvider]: if a RevenueCat public key is provided, we run the live
+/// Purchases stack (real Paywall + Customer Center) even when the rest of the
+/// app is in demo mode — so the subscription flow can be exercised on its own.
+final revenueCatLiveProvider = Provider<bool>((_) => AppConfig.hasRevenueCat);
+
 final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService(mock: ref.watch(mockModeProvider));
 });
 
 final purchasesServiceProvider = Provider<PurchasesService>((ref) {
-  return ref.watch(mockModeProvider)
-      ? MockPurchasesService()
-      : LivePurchasesService();
+  return ref.watch(revenueCatLiveProvider)
+      ? LivePurchasesService()
+      : MockPurchasesService();
 });
 
 final analysisServiceProvider = Provider<AnalysisService>((ref) {

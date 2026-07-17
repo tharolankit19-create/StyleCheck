@@ -25,5 +25,9 @@ export const FREE_ANALYSES_PER_DAY = defineString("FREE_ANALYSES_PER_DAY", {
   default: "3",
 });
 
-/** RevenueCat entitlement id that unlocks premium features. */
-export const PREMIUM_ENTITLEMENT = "premium";
+/**
+ * RevenueCat entitlement identifier that unlocks premium features.
+ * MUST match the entitlement identifier in the RevenueCat dashboard AND the
+ * client's `AppConfig.premiumEntitlement`.
+ */
+export const PREMIUM_ENTITLEMENT = "StyleCheck Pro";

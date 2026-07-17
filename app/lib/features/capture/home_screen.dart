@@ -12,6 +12,7 @@ import '../../core/theme/app_typography.dart';
 import '../../core/widgets/aurora_background.dart';
 import '../../core/widgets/gradient_button.dart';
 import '../analysis/analysis_controller.dart';
+import '../paywall/paywall_launcher.dart';
 import 'image_source_sheet.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -43,6 +44,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mock = ref.watch(mockModeProvider);
+    final premium = ref.watch(premiumProvider);
     return Scaffold(
       body: AuroraBackground(
         child: SafeArea(
@@ -56,6 +58,14 @@ class HomeScreen extends ConsumerWidget {
                   children: [
                     const _Wordmark(),
                     const Spacer(),
+                    if (premium)
+                      IconButton(
+                        tooltip: 'Manage subscription',
+                        onPressed: () =>
+                            PaywallLauncher.presentCustomerCenter(context, ref),
+                        icon: const Icon(Icons.manage_accounts_rounded,
+                            color: AppColors.textSecondary),
+                      ),
                     if (mock) const _DemoBadge(),
                   ],
                 ),

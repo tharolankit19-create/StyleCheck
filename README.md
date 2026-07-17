@@ -47,8 +47,8 @@ Functions, Firestore), RevenueCat, Google Cloud Vision, and Replicate.
 ```
 
 - **Free**: score + one-liner + category.
-- **Premium** (RevenueCat entitlement `premium`): detailed breakdown + AI restyle
-  + unlimited daily checks.
+- **Premium** (RevenueCat entitlement `StyleCheck Pro`): detailed breakdown + AI
+  restyle + unlimited daily checks.
 - **Anonymous auth only** — no signup, no email, no social login.
 
 ---
@@ -65,6 +65,11 @@ Functions, Firestore), RevenueCat, Google Cloud Vision, and Replicate.
   widgets, config, providers) and `data/*` (models, services, repositories).
 - **Flow**: a single `AnalysisController` (state machine: `idle → analyzing →
   done | error`) drives capture → loading → the score reveal.
+- **Subscriptions**: `purchases_flutter` for entitlements/customer info +
+  `purchases_ui_flutter` for RevenueCat's prebuilt **Paywall** and **Customer
+  Center**. `PaywallLauncher` presents the native paywall in live mode and falls
+  back to an in-app paywall otherwise. The `premium` flag is kept live via the
+  CustomerInfo update stream and read app-wide through Riverpod.
 
 **Server (Cloud Functions, TypeScript / Node 20)**
 
@@ -174,15 +179,35 @@ StyleCheck/
 
 ### 2. RevenueCat
 
+The app uses the RevenueCat SDK (`purchases_flutter`) plus RevenueCat's prebuilt
+UI (`purchases_ui_flutter`) for the **Paywall** and **Customer Center**.
+
 1. Create a RevenueCat project; add your App Store and Play Store apps.
-2. Create an entitlement named exactly **`premium`**.
-3. Create products/offerings — for the default paywall layout, a **Weekly** and
-   an **Annual** package (the annual is highlighted with a 3-day trial). The app
-   reads whatever packages your `current` offering exposes.
-4. Copy the **public SDK keys** (one for Apple, one for Google).
-5. Add a **Webhook** (Integrations → Webhooks) pointing at your deployed
+2. Create an **entitlement** whose identifier is exactly **`StyleCheck Pro`**.
+   This identifier must match `AppConfig.premiumEntitlement` (client) and
+   `PREMIUM_ENTITLEMENT` (`functions/src/config.ts`). If your dashboard shows a
+   different identifier from the display name, use the identifier in both places.
+3. Create **products** and attach them to the entitlement:
+   - `yearly` — annual subscription (optionally a 3-day intro trial)
+   - `Weekly` — weekly subscription
+4. Create an **Offering** (e.g. `default`) with two **packages** — Annual → `yearly`,
+   Weekly → `Weekly`. The app reads whatever packages your `current` offering
+   exposes, so package identifiers are flexible.
+5. Build a **Paywall** on that offering (RevenueCat → Paywalls). The app presents
+   this remote-configured paywall via `RevenueCatUI.presentPaywallIfNeeded`. If no
+   paywall is configured, the app automatically falls back to its in-app paywall
+   screen, so nothing breaks.
+6. (Optional) Enable the **Customer Center** (RevenueCat → Customer Center). The
+   app exposes it from the home header and the premium section for subscribers
+   via `RevenueCatUI.presentCustomerCenter`.
+7. Copy the **public SDK keys** (one for Apple, one for Google). The RevenueCat
+   **Test Store** key (`test_…`) works on both platforms for sandbox testing
+   without App Store / Play configuration.
+8. Add a **Webhook** (Integrations → Webhooks) pointing at your deployed
    `revenuecatWebhook` URL, and set an **Authorization header** value — you'll
-   store the same value as the `REVENUECAT_WEBHOOK_AUTH` secret.
+   store the same value as the `REVENUECAT_WEBHOOK_AUTH` secret. RevenueCat sends
+   the Firebase uid as `app_user_id` (the app calls `Purchases.configure` with the
+   uid), so entitlements map to the right user server-side.
 
 ### 3. Replicate
 
@@ -306,8 +331,8 @@ Then apply the required permissions (image capture / library):
 <string>StyleCheck needs your photos to check your outfit.</string>
 ```
 
-Set the iOS deployment target to **13.0+** (Firebase/RevenueCat requirement) and
-run `cd ios && pod install`.
+Set the iOS deployment target to **15.0+** (required by RevenueCat's Paywall /
+Customer Center UI) and run `cd ios && pod install`.
 
 **Android — `android/app/src/main/AndroidManifest.xml`** (camera is optional,
 declared non-required so the app installs on camera-less devices):
@@ -316,7 +341,8 @@ declared non-required so the app installs on camera-less devices):
 <uses-feature android:name="android.hardware.camera" android:required="false" />
 ```
 
-Set `minSdkVersion` to **23+** in `android/app/build.gradle`.
+Set `minSdkVersion` to **24+** in `android/app/build.gradle` (required by
+`purchases_ui_flutter`).
 
 **Fonts:** the app uses `google_fonts`, which fetches Archivo/Inter at first run
 and caches them. To ship fonts offline, download the TTFs into `app/assets/fonts`

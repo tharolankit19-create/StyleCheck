@@ -2,13 +2,13 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/gradient_button.dart';
 import '../../data/models/analysis_result.dart';
+import '../paywall/paywall_launcher.dart';
 import 'restyle_controller.dart';
 
 /// The premium block on the result screen: the detailed breakdown and the
@@ -36,6 +36,14 @@ class PremiumSection extends ConsumerWidget {
         ),
         const SizedBox(height: Insets.md),
         _RestylePanel(result: result),
+        const SizedBox(height: Insets.lg),
+        Center(
+          child: GhostButton(
+            label: 'Manage subscription',
+            icon: Icons.card_membership_rounded,
+            onPressed: () => PaywallLauncher.presentCustomerCenter(context, ref),
+          ),
+        ),
       ],
     );
   }
@@ -365,9 +373,9 @@ class _FauxBar extends StatelessWidget {
   }
 }
 
-class _UnlockCard extends StatelessWidget {
+class _UnlockCard extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.all(Insets.lg),
       decoration: BoxDecoration(
@@ -394,7 +402,7 @@ class _UnlockCard extends StatelessWidget {
           GradientButton(
             label: 'Unlock premium',
             icon: Icons.workspace_premium_rounded,
-            onPressed: () => context.push('/paywall'),
+            onPressed: () => PaywallLauncher.present(context, ref),
           ),
         ],
       ),

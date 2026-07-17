@@ -34,10 +34,20 @@ class AppConfig {
       String.fromEnvironment('FIREBASE_IOS_BUNDLE_ID');
 
   // --- RevenueCat public SDK key (platform-specific) ---
+  //
+  // This is RevenueCat's *public* SDK key (safe to ship in the client binary).
+  // It is injected via --dart-define so nothing is committed to source. Provide
+  // your Apple key for iOS builds and your Google key for Android builds. For
+  // the RevenueCat Test Store you can pass the single test_… key on both.
   static const revenueCatApiKey = String.fromEnvironment('REVENUECAT_API_KEY');
 
-  /// Entitlement id that unlocks premium — must match RevenueCat + Functions.
-  static const premiumEntitlement = 'premium';
+  /// Entitlement identifier that unlocks premium.
+  ///
+  /// This must match EXACTLY the entitlement identifier in your RevenueCat
+  /// dashboard AND the `PREMIUM_ENTITLEMENT` constant in the Cloud Functions
+  /// (`functions/src/config.ts`). If your dashboard identifier is different from
+  /// its display name, use the identifier here.
+  static const premiumEntitlement = 'StyleCheck Pro';
 
   /// Region the callable functions are deployed to.
   static const functionsRegion = 'us-central1';

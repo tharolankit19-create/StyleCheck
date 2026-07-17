@@ -90,9 +90,9 @@ class MockAnalysisService implements AnalysisService {
       score: rounded,
       critique: critique,
       category: category,
-      // Mock always unlocks locally so the premium UI is demoable; the real
-      // backend gates this on the RevenueCat entitlement.
-      isPremiumUnlocked: true,
+      // Free by default; the AnalysisController overlays the live premium flag,
+      // so the locked teaser → paywall → unlock flow is exercised in demo too.
+      isPremiumUnlocked: false,
       breakdown: breakdown,
       weakestDimension: breakdown
           .reduce((m, e) => e.value < m.value ? e : m)
