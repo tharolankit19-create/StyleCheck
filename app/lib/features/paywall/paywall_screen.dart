@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/error/failures.dart';
 import '../../core/providers.dart';
+import '../../core/utils/external_links.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/app_typography.dart';
@@ -334,12 +335,12 @@ class _Footer extends StatelessWidget {
               ),
               Text('·', style: AppType.caption),
               TextButton(
-                onPressed: () {},
+                onPressed: () => ExternalLinks.terms(context),
                 child: Text('Terms', style: AppType.caption),
               ),
               Text('·', style: AppType.caption),
               TextButton(
-                onPressed: () {},
+                onPressed: () => ExternalLinks.privacy(context),
                 child: Text('Privacy', style: AppType.caption),
               ),
             ],

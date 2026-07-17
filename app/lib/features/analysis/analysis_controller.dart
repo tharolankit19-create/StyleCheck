@@ -6,6 +6,7 @@ import '../../core/error/failures.dart';
 import '../../core/providers.dart';
 import '../../data/models/analysis_result.dart';
 import '../../data/services/analysis_service.dart';
+import '../../data/services/observability.dart';
 
 /// The state machine for the capture → analyze → reveal flow.
 sealed class AnalysisFlowState {
@@ -49,6 +50,7 @@ class AnalysisController extends Notifier<AnalysisFlowState> {
   Future<void> analyze(Uint8List bytes, {String? localPath}) async {
     _lastBytes = bytes;
     state = FlowAnalyzing(AnalysisStage.uploading, bytes);
+    Observability.instance.log('analysis_started');
     try {
       final result = await _service.analyze(
         bytes,
@@ -59,12 +61,18 @@ class AnalysisController extends Notifier<AnalysisFlowState> {
       );
       // Reflect current premium entitlement into the result.
       final premium = ref.read(premiumProvider);
+      Observability.instance.log('score_revealed', {
+        'score': result.score,
+        'category': result.category,
+      });
       state = FlowDone(
         premium ? result.copyWith(isPremiumUnlocked: true) : result,
       );
-    } on AppFailure catch (f) {
+    } on AppFailure catch (f, s) {
+      Observability.instance.recordError(f, s, reason: 'analyze');
       state = FlowError(f, bytes, localPath);
-    } catch (_) {
+    } catch (e, s) {
+      Observability.instance.recordError(e, s, reason: 'analyze:unknown');
       state = FlowError(const UnknownFailure(), bytes, localPath);
     }
   }

@@ -6,7 +6,12 @@ breakdown and an **AI restyle** of the same person in a better-coordinated
 outfit.
 
 Built with Flutter (Android + iOS), Firebase (Anonymous Auth, Storage, Cloud
-Functions, Firestore), RevenueCat, Google Cloud Vision, and Replicate.
+Functions, Firestore, App Check, Crashlytics, Analytics), RevenueCat, Google
+Cloud Vision, and Replicate.
+
+> **Shipping to the stores?** Follow [`PRODUCTION.md`](PRODUCTION.md) — it maps
+> the RevenueCat/Firebase setup, App Check, native config, and store submission
+> end to end.
 
 ---
 
@@ -128,6 +133,10 @@ cd functions && npm install && npm test
   the RevenueCat webhook. See `firestore.rules` and `storage.rules`.
 - Storage uploads are namespaced to `uploads/<uid>/…` and size/content-type
   capped.
+- **App Check** attests calls come from a genuine app build; the callables reject
+  everything else when `ENFORCE_APP_CHECK=true`. Server gating additionally
+  honors RevenueCat Firebase Extension custom claims, so a client can never forge
+  premium.
 
 ---
 

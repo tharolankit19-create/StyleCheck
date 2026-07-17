@@ -52,6 +52,20 @@ class AppConfig {
   /// Region the callable functions are deployed to.
   static const functionsRegion = 'us-central1';
 
+  // --- Legal / support links (App Store & Play require these on the paywall) ---
+  static const privacyPolicyUrl = String.fromEnvironment(
+    'PRIVACY_POLICY_URL',
+    defaultValue: 'https://style-check-zeta.vercel.app/privacy',
+  );
+  static const termsOfServiceUrl = String.fromEnvironment(
+    'TERMS_URL',
+    defaultValue: 'https://style-check-zeta.vercel.app/terms',
+  );
+  static const supportEmail = String.fromEnvironment(
+    'SUPPORT_EMAIL',
+    defaultValue: 'support@style-check.app',
+  );
+
   // --- Mock/demo mode ---
   // When true, the app returns deterministic fake analysis + a placeholder
   // restyle image, so the entire flow runs with zero backend/keys. Defaults to

@@ -15,12 +15,13 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
-import { VISION_API_KEY, FREE_ANALYSES_PER_DAY, PREMIUM_ENTITLEMENT } from "./config";
+import { VISION_API_KEY, FREE_ANALYSES_PER_DAY, ENFORCE_APP_CHECK } from "./config";
 import { annotateImage } from "./services/vision";
 import { extractFeatures, classifyCategory } from "./scoring/features";
 import { scoreOutfit } from "./scoring/scoreEngine";
 import { buildCritique } from "./scoring/critique";
 import { withRetry } from "./util/retry";
+import { isPremium } from "./util/entitlement";
 
 interface AnalyzeRequest {
   /** Storage object path, e.g. "uploads/<uid>/<sha>.jpg". */
@@ -29,19 +30,15 @@ interface AnalyzeRequest {
   imageSha256: string;
 }
 
-function isPremium(userDoc: FirebaseFirestore.DocumentData | undefined): boolean {
-  const ent = userDoc?.entitlements as Record<string, boolean> | undefined;
-  return Boolean(ent?.[PREMIUM_ENTITLEMENT]) || Boolean(userDoc?.premium);
-}
-
 export const analyzeOutfit = onCall(
   {
     region: "us-central1",
     secrets: [VISION_API_KEY],
     memory: "512MiB",
     timeoutSeconds: 60,
-    // App Check strongly recommended in production; enforced when configured.
-    enforceAppCheck: false,
+    // App Check blocks calls from anything but genuine app builds. Enable it in
+    // production by setting ENFORCE_APP_CHECK=true (see README / PRODUCTION.md).
+    enforceAppCheck: ENFORCE_APP_CHECK,
   },
   async (request) => {
     const uid = request.auth?.uid;
@@ -61,7 +58,10 @@ export const analyzeOutfit = onCall(
     const db = getFirestore();
     const userRef = db.collection("users").doc(uid);
     const userSnap = await userRef.get();
-    const premium = isPremium(userSnap.data());
+    const premium = isPremium({
+      userDoc: userSnap.data(),
+      token: request.auth?.token as Record<string, unknown> | undefined,
+    });
 
     // 1) Determinism + cost control: return the cached analysis for this image.
     const analysisRef = db.collection("analyses").doc(imageSha256);

@@ -1,0 +1,16 @@
+<!-- Merge these keys into ios/Runner/Info.plist (inside the top-level <dict>). -->
+
+<key>CFBundleDisplayName</key>
+<string>StyleCheck</string>
+
+<!-- image_picker: camera + photo library access. Required or the app is rejected. -->
+<key>NSCameraUsageDescription</key>
+<string>StyleCheck uses your camera to take a full-body photo of your outfit to score it.</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>StyleCheck accesses your photos so you can pick a full-body outfit shot to score.</string>
+
+<!-- Only portrait, matching the app's locked orientation. -->
+<key>UISupportedInterfaceOrientations</key>
+<array>
+  <string>UIInterfaceOrientationPortrait</string>
+</array>

@@ -26,6 +26,14 @@ export const FREE_ANALYSES_PER_DAY = defineString("FREE_ANALYSES_PER_DAY", {
 });
 
 /**
+ * Enforce Firebase App Check on the callable functions. Read from the runtime
+ * env so it can be flipped without code changes:
+ *   functions/.env  ->  ENFORCE_APP_CHECK=true   (recommended in production)
+ * Left false for local emulation / first deploys before App Check is wired up.
+ */
+export const ENFORCE_APP_CHECK = process.env.ENFORCE_APP_CHECK === "true";
+
+/**
  * RevenueCat entitlement identifier that unlocks premium features.
  * MUST match the entitlement identifier in the RevenueCat dashboard AND the
  * client's `AppConfig.premiumEntitlement`.

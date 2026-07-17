@@ -13,8 +13,9 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
-import { REPLICATE_API_TOKEN, REPLICATE_MODEL, PREMIUM_ENTITLEMENT } from "./config";
+import { REPLICATE_API_TOKEN, REPLICATE_MODEL, ENFORCE_APP_CHECK } from "./config";
 import { generateBetterOutfitImage } from "./services/replicate";
+import { isPremium } from "./util/entitlement";
 
 interface GenRequest {
   imageSha256: string;
@@ -26,7 +27,7 @@ export const generateBetterOutfit = onCall(
     secrets: [REPLICATE_API_TOKEN],
     memory: "512MiB",
     timeoutSeconds: 120,
-    enforceAppCheck: false,
+    enforceAppCheck: ENFORCE_APP_CHECK,
   },
   async (request) => {
     const uid = request.auth?.uid;
@@ -39,8 +40,10 @@ export const generateBetterOutfit = onCall(
 
     const db = getFirestore();
     const userSnap = await db.collection("users").doc(uid).get();
-    const ent = userSnap.data()?.entitlements as Record<string, boolean> | undefined;
-    const premium = Boolean(ent?.[PREMIUM_ENTITLEMENT]) || Boolean(userSnap.data()?.premium);
+    const premium = isPremium({
+      userDoc: userSnap.data(),
+      token: request.auth?.token as Record<string, unknown> | undefined,
+    });
     if (!premium) {
       throw new HttpsError("permission-denied", "Premium required to generate a restyle.");
     }

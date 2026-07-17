@@ -1,0 +1,17 @@
+<!--
+  Merge into android/app/src/main/AndroidManifest.xml.
+  INTERNET is required for Firebase / RevenueCat / Replicate image loading.
+  Camera is declared optional so the app installs on camera-less devices
+  (image_picker still works from the gallery).
+-->
+
+<!-- Direct children of <manifest>: -->
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-feature android:name="android.hardware.camera" android:required="false" />
+
+<!--
+  Set the user-visible app name on the <application> element:
+    android:label="StyleCheck"
+  Recommended for edge-to-edge + modern theming:
+    android:theme="@style/LaunchTheme"
+-->
