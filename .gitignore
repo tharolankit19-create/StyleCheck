@@ -1,0 +1,23 @@
+# Node / Cloud Functions
+functions/node_modules/
+functions/lib/
+functions/.env
+functions/*.log
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*-debug.log
+
+# Secrets (never commit)
+.env
+.env.*
+**/serviceAccount*.json
+**/google-services.json
+**/GoogleService-Info.plist
+
+# OS
+.DS_Store
+Thumbs.db
