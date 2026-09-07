@@ -1,26 +1,28 @@
-# Node / Cloud Functions
-functions/node_modules/
-functions/lib/
-functions/.env
-functions/*.log
+# Gradle
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+captures/
+.externalNativeBuild
+.cxx
+*.apk
+*.aab
+*.aar
+*.ap_
+*.dex
+*.class
 
-# Firebase
-.firebase/
-firebase-debug.log
-firestore-debug.log
-ui-debug.log
-*-debug.log
+# Capacitor
+.capacitor/
 
-# Secrets (never commit)
-.env
-.env.*
-# …but DO track the non-secret example templates
-!.env.example
-!**/.env.example
-**/serviceAccount*.json
-**/google-services.json
-**/GoogleService-Info.plist
+# Node
+node_modules/
+dist/
 
-# OS
+# Misc
 .DS_Store
-Thumbs.db
+*.log
+.env
+.env.local

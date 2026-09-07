@@ -1,0 +1,18 @@
+{
+  "name": "Earn Your Screen Time",
+  "short_name": "EarnYST",
+  "description": "Earn your screen time by doing push-ups and squats.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0b10",
+  "theme_color": "#0b0b10",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
