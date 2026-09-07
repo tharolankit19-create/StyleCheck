@@ -1,41 +1,63 @@
-name: CI
+name: build
 
 on:
   push:
-    branches: ["claude/stylecheck-flutter-app-k9whvx", "main"]
+    branches: [main]
   pull_request:
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
-  functions:
-    name: Cloud Functions (typecheck · lint · test)
+  web:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: functions
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: npm
-          cache-dependency-path: functions/package-lock.json
+          cache: "npm"
       - run: npm ci
-      - run: npx tsc --noEmit
-      - run: npm run lint --if-present
+      - run: npm run typecheck
+      - run: npm run lint
       - run: npm test
+      - run: npm run build
+      - name: Upload web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-dist
+          path: dist/
+          if-no-files-found: error
 
-  app:
-    name: Flutter app (analyze · test)
+  android:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: app
+    needs: web
     steps:
       - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+      - uses: actions/setup-node@v4
         with:
-          channel: stable
-          cache: true
-      - run: flutter pub get
-      - run: flutter analyze
-      - run: flutter test
+          node-version: "20"
+          cache: "npm"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Install + build web
+        run: |
+          npm ci
+          npm run build
+      - name: Regenerate android/ via Capacitor and re-apply custom Kotlin plugins
+        run: |
+          rm -rf android
+          npx cap add android
+          mkdir -p android/app/src/main/kotlin/com/earnyst/app
+          cp native-plugins/*.kt android/app/src/main/kotlin/com/earnyst/app/
+          npx cap sync android
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: earnyst-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: warn

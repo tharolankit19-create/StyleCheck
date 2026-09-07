@@ -1,0 +1,33 @@
+buildscript {
+    ext {
+        kotlin_version = '1.9.22'
+        androidxAppCompatVersion = '1.6.1'
+        androidxCoordinatorLayoutVersion = '1.2.0'
+        coreSplashScreenVersion = '1.0.1'
+        androidxWebkitVersion = '1.9.0'
+        junitVersion = '4.13.2'
+        androidxJunitVersion = '1.1.5'
+        androidxEspressoCoreVersion = '3.5.1'
+        cordovaAndroidVersion = '10.1.1'
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gms:google-services:4.4.0'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+tasks.register('clean', Delete) {
+    delete rootProject.buildDir
+}

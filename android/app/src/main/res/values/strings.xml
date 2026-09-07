@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Earn Your Screen Time</string>
+    <string name="title_activity_main">Earn Your Screen Time</string>
+    <string name="package_name">com.earnyst.app</string>
+    <string name="custom_url_scheme">com.earnyst.app</string>
+</resources>
