@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-      - run: npm ci
+      - run: npm ci --legacy-peer-deps
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
@@ -43,7 +43,7 @@ jobs:
           java-version: "17"
       - name: Install + build web
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
           npm run build
       - name: Regenerate android/ via Capacitor and re-apply custom Kotlin plugins
         run: |
