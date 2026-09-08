@@ -1,19 +1,22 @@
-{
-  "appId": "com.earnyst.app",
-  "appName": "Earn Your Screen Time",
-  "webDir": "dist",
-  "bundledWebRuntime": false,
-  "android": {
-    "allowMixedContent": false,
-    "captureInput": true,
-    "webContentsDebuggingEnabled": false
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.earnyst.app',
+  appName: 'Earn Your Screen Time',
+  webDir: 'dist',
+  android: {
+    allowMixedContent: false,
+    captureInput: true,
+    webContentsDebuggingEnabled: false,
   },
-  "server": {
-    "androidScheme": "https"
+  server: {
+    androidScheme: 'https',
   },
-  "plugins": {
-    "SplashScreen": {
-      "launchShowDuration": 800
-    }
-  }
-}
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 800,
+    },
+  },
+};
+
+export default config;
