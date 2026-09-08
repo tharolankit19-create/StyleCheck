@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [main]
+    branches: [main, "claude/stylecheck-flutter-app-k9whvx"]
   pull_request:
     branches: [main]
   workflow_dispatch:
